@@ -5,7 +5,7 @@ function Router(container, routes, options) {
     }
     this[elementName] = element;
     if (typeof element === 'string') {
-      const createdElement = document.createElement('div');
+      var createdElement = document.createElement('div');
       createdElement.innerHTML = element;
       anchor.appendChild(createdElement);
     } else {
@@ -15,7 +15,7 @@ function Router(container, routes, options) {
 
   function _goTo(route) {
     window.history.pushState({}, route, window.location.origin + route);
-    const pathname = window.location.pathname;
+    var pathname = window.location.pathname;
     if (this.routes[pathname]) {
       _appendComponent.call(
         this,
@@ -56,7 +56,7 @@ function Router(container, routes, options) {
       });
   }
 
-  const _routerContainer = document.createElement('div');
+  var _routerContainer = document.createElement('div');
 
   this.routes = routes;
   this.errorHTML = options.errorHTML
