@@ -1,7 +1,10 @@
 function Router(container, routes, options) {
 
-  function _appendResource(element, anchor) {
-    this[element] = element;
+  function _appendResource(elementName, element, anchor, opts) {
+    if (opts && opts.clearAnchor) {
+      anchor.innerHTML = '';
+    }
+    this[elementName] = element;
     if (typeof element === 'string') {
       const createdElement = document.createElement('div');
       createdElement.innerHTML = element;
@@ -11,27 +14,38 @@ function Router(container, routes, options) {
     }
   }
 
-  function goTo(route) {
+  function _goTo(route) {
     window.history.pushState({}, route, `${window.location.origin}${route}`);
-    this.routerContent.innerHTML = routes[window.location.pathname];
     if (this.routes[window.location.pathname]) {
-      this.routerContent.innerHTML = this.routes[window.location.pathname];
+      _appendResource.call(
+        this,
+        'currentView',
+        routes[window.location.pathname],
+        this.routerContainer,
+        {clearAnchor: true},
+      );
       if (options.debug) {
         console.log(
           `%cNavigated to: ${route}`,
           'color: green; font-size: 14px;',
         );
       }
-      _replaceLinks.call(this, this.routerContent);
+      _replaceLinks.call(this, this.routerContainer);
     } else {
-      this.routerContent.innerHTML = this.errorHTML;
+      _appendResource.call(
+        this,
+        'currentView',
+        this.errorHTML,
+        this.routerContainer,
+        {clearAnchor: true},
+      );
       if (options.debug) {
         console.error(`Route not found: ${route}`);
       }
     }
-  };
+  }
 
-  this.goTo = goTo.bind(this);
+  this.goTo = _goTo.bind(this);
 
   function _replaceLinks(containerForReplacement) {
     containerForReplacement.querySelectorAll('.router-link').forEach(link => {
@@ -40,7 +54,7 @@ function Router(container, routes, options) {
     });
   }
 
-  this.routerContent = document.createElement('div');
+  this.routerContainer = document.createElement('div');
 
   this.routes = routes;
   this.errorHTML = options.errorHTML
@@ -51,11 +65,11 @@ function Router(container, routes, options) {
     window.router = this;
     this.container = document.getElementById(container);
     if (options.header) {
-      _appendResource.call(this, options.header, this.container);
+      _appendResource.call(this, 'header', options.header, this.container);
     }
-    this.container.appendChild(this.routerContent);
+    this.container.appendChild(this.routerContainer);
     if (options.footer) {
-      _appendResource.call(this, options.footer, this.container);
+      _appendResource.call(this, 'footer', options.footer, this.container);
     }
     this.goTo(window.location.pathname);
     if (options.debug) {
