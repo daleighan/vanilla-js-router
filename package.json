@@ -1,11 +1,27 @@
 {
   "name": "vanilla-js-router",
   "version": "1.0.0",
-  "description": "A library for Vanilla JS client side routing",
+  "description": "A Vanilla JS library for client side routing",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Alexander Leigh",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "husky": "^3.0.9",
+    "lint-staged": "^9.4.2",
+    "prettier": "^1.18.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,json,md}": [
+      "prettier --write",
+      "git add"
+    ]
+  }
 }
