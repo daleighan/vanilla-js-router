@@ -1,6 +1,8 @@
 function Router(container, routes, debug, errorHTML) {
   this.router = document.createElement('div');
   this.routes = routes;
+  this.errorHTML = errorHTML ? errorHTML : '<div>Not Found</div>';
+  console.log(this.routes);
 
   this.goTo = function(route) {
     window.history.pushState({}, route, `${window.location.origin}${route}`);
@@ -8,27 +10,34 @@ function Router(container, routes, debug, errorHTML) {
     if (this.routes[window.location.pathname]) {
       this.router.innerHTML = this.routes[window.location.pathname];
       if (debug) {
-        console.log(`Navigated to: ${route}`);
+        console.log(
+          `%cNavigated to: ${route}`,
+          'color: green; font-size: 14px;',
+        );
       }
     } else {
-      this.router.innerHTML = errorHTML ? erroHTML : '<div>Not Found</div>';
+      this.router.innerHTML = this.errorHTML;
       if (debug) {
         console.error(`Route not found: ${route}`);
       }
     }
   };
 
-  window.router = this;
-
   window.onload = () => {
+    window.router = this;
     document.getElementById(container).appendChild(this.router);
     this.goTo(window.location.pathname);
     if (debug) {
       console.log(
-        'Router Initialized with Routes: ',
-        Object.keys(this.routes).join(', '),
+        `%cRouter Initialized with Routes: ${Object.keys(this.routes).join(
+          ', ',
+        )}`,
+        'color: blue; font-size: 14px;',
       );
-      console.log('Current Path: ', window.location.pathname);
+      console.log(
+        `%cCurrent Path: ${window.location.pathname}`,
+        'color: orange; font-size: 14px;',
+      );
     }
   };
 }
