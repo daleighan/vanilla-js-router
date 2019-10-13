@@ -14,6 +14,10 @@ function Router(container, routes, debug, errorHTML) {
           'color: green; font-size: 14px;',
         );
       }
+      this.router.querySelectorAll('.router-link').forEach(link => {
+        link.onclick = this.goTo.bind(this, link.pathname);
+        link.href = 'javascript:void(null);';
+      });
     } else {
       this.router.innerHTML = this.errorHTML;
       if (debug) {
@@ -38,9 +42,10 @@ function Router(container, routes, debug, errorHTML) {
         'color: orange; font-size: 14px;',
       );
     }
-    document
-      .querySelectorAll('.router-link')
-      .forEach(link => (link.href = 'javascript:void(null);'));
+    document.querySelectorAll('.router-link').forEach(link => {
+      link.onclick = this.goTo.bind(this, link.pathname);
+      link.href = 'javascript:void(null);';
+    });
   };
 }
 
