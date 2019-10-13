@@ -86,7 +86,7 @@ function Router(container, routes, options) {
       )
     }
     _replaceLinks.call(this, this, document)
-  }.call(this)
+  }.bind(this)
 }
 
 module.exports = Router
