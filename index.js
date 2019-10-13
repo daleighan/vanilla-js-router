@@ -1,6 +1,6 @@
 function Router(container, routes, options) {
 
-  function _appendResource(elementName, element, anchor, opts) {
+  function _appendComponent(elementName, element, anchor, opts) {
     if (opts && opts.clearAnchor) {
       anchor.innerHTML = '';
     }
@@ -17,11 +17,11 @@ function Router(container, routes, options) {
   function _goTo(route) {
     window.history.pushState({}, route, `${window.location.origin}${route}`);
     if (this.routes[window.location.pathname]) {
-      _appendResource.call(
+      _appendComponent.call(
         this,
         'currentView',
         routes[window.location.pathname],
-        this.routerContainer,
+        _routerContainer,
         {clearAnchor: true},
       );
       if (options.debug) {
@@ -30,13 +30,13 @@ function Router(container, routes, options) {
           'color: green; font-size: 14px;',
         );
       }
-      _replaceLinks.call(this, this.routerContainer);
+      _replaceLinks.call(this, _routerContainer);
     } else {
-      _appendResource.call(
+      _appendComponent.call(
         this,
         'currentView',
         this.errorHTML,
-        this.routerContainer,
+        _routerContainer,
         {clearAnchor: true},
       );
       if (options.debug) {
@@ -54,7 +54,7 @@ function Router(container, routes, options) {
     });
   }
 
-  this.routerContainer = document.createElement('div');
+  const _routerContainer = document.createElement('div');
 
   this.routes = routes;
   this.errorHTML = options.errorHTML
@@ -65,11 +65,11 @@ function Router(container, routes, options) {
     window.router = this;
     this.container = document.getElementById(container);
     if (options.header) {
-      _appendResource.call(this, 'header', options.header, this.container);
+      _appendComponent.call(this, 'header', options.header, this.container);
     }
-    this.container.appendChild(this.routerContainer);
+    this.container.appendChild(_routerContainer);
     if (options.footer) {
-      _appendResource.call(this, 'footer', options.footer, this.container);
+      _appendComponent.call(this, 'footer', options.footer, this.container);
     }
     this.goTo(window.location.pathname);
     if (options.debug) {
