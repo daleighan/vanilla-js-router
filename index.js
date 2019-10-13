@@ -1,14 +1,26 @@
-function Router(container, routes, debug, errorHTML) {
+function Router(container, routes, options) {
+  if (options.header) {
+    const header = document.createElement('div');
+    header.innerHTML = options.header;
+    this.header = header;
+  }
   this.router = document.createElement('div');
+  if (options.footer) {
+    const footer = document.createElement('div');
+    footer.innerHTML = options.footer;
+    this.footer = footer;
+  }
   this.routes = routes;
-  this.errorHTML = errorHTML ? errorHTML : '<div>Not Found</div>';
+  this.errorHTML = options.errorHTML
+    ? options.errorHTML
+    : '<div>Not Found</div>';
 
   this.goTo = function(route) {
     window.history.pushState({}, route, `${window.location.origin}${route}`);
     this.router.innerHTML = routes[window.location.pathname];
     if (this.routes[window.location.pathname]) {
       this.router.innerHTML = this.routes[window.location.pathname];
-      if (debug) {
+      if (options.debug) {
         console.log(
           `%cNavigated to: ${route}`,
           'color: green; font-size: 14px;',
@@ -20,7 +32,7 @@ function Router(container, routes, debug, errorHTML) {
       });
     } else {
       this.router.innerHTML = this.errorHTML;
-      if (debug) {
+      if (options.debug) {
         console.error(`Route not found: ${route}`);
       }
     }
@@ -28,9 +40,16 @@ function Router(container, routes, debug, errorHTML) {
 
   window.onload = () => {
     window.router = this;
-    document.getElementById(container).appendChild(this.router);
+    this.container = document.getElementById(container)
+    if (this.header) {
+      this.container.appendChild(this.header);
+    }
+    this.container.appendChild(this.router);
+    if (this.footer) {
+      this.container.appendChild(this.footer);
+    }
     this.goTo(window.location.pathname);
-    if (debug) {
+    if (options.debug) {
       console.log(
         `%cRouter Initialized with Routes: ${Object.keys(this.routes).join(
           ', ',
