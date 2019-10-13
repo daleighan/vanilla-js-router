@@ -16,11 +16,12 @@ function Router(container, routes, options) {
 
   function _goTo(route) {
     window.history.pushState({}, route, `${window.location.origin}${route}`);
-    if (this.routes[window.location.pathname]) {
+    const noSlashPathname = _removeTrailingSlash(window.location.pathname);
+    if (this.routes[noSlashPathname]) {
       _appendComponent.call(
         this,
         'currentView',
-        routes[window.location.pathname],
+        routes[noSlashPathname],
         _routerContainer,
         {clearAnchor: true},
       );
@@ -54,6 +55,12 @@ function Router(container, routes, options) {
     });
   }
 
+  function _removeTrailingSlash(pathname) {
+    return window.location.pathname.length > 1
+      ? window.location.pathname.replace(/(\/#|\/|#)$/, '')
+      : window.location.pathname;
+  }
+
   const _routerContainer = document.createElement('div');
 
   this.routes = routes;
@@ -80,7 +87,7 @@ function Router(container, routes, options) {
         'color: blue; font-size: 14px;',
       );
       console.log(
-        `%cCurrent Path: ${window.location.pathname}`,
+        `%cCurrent Path: ${_removeTrailingSlash(window.location.pathname)}`,
         'color: orange; font-size: 14px;',
       );
     }
