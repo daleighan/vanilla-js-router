@@ -2,7 +2,6 @@ function Router(container, routes, debug, errorHTML) {
   this.router = document.createElement('div');
   this.routes = routes;
   this.errorHTML = errorHTML ? errorHTML : '<div>Not Found</div>';
-  console.log(this.routes);
 
   this.goTo = function(route) {
     window.history.pushState({}, route, `${window.location.origin}${route}`);
@@ -39,6 +38,9 @@ function Router(container, routes, debug, errorHTML) {
         'color: orange; font-size: 14px;',
       );
     }
+    document
+      .querySelectorAll('.router-link')
+      .forEach(link => (link.href = 'javascript:void(null);'));
   };
 }
 
