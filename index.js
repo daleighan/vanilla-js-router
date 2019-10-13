@@ -14,7 +14,7 @@ function Router(container, routes, options) {
   }
 
   function _goTo(route) {
-    window.history.pushState({}, route, `${window.location.origin}${route}`);
+    window.history.pushState({}, route, window.location.origin + route);
     const pathname = window.location.pathname;
     if (this.routes[pathname]) {
       _appendComponent.call(
@@ -26,7 +26,7 @@ function Router(container, routes, options) {
       );
       if (options.debug) {
         console.log(
-          `%cNavigated to: ${route}`,
+          '%cNavigated to: ' + route,
           'color: green; font-size: 14px;',
         );
       }
@@ -40,7 +40,7 @@ function Router(container, routes, options) {
         {clearAnchor: true},
       );
       if (options.debug) {
-        console.error(`Route not found: ${route}`);
+        console.error('Route not found: ' + route);
       }
     }
   }
@@ -76,13 +76,12 @@ function Router(container, routes, options) {
     this.goTo(window.location.pathname);
     if (options.debug) {
       console.log(
-        `%cRouter Initialized with Routes: ${Object.keys(this.routes).join(
-          ', ',
-        )}`,
+        '%cRouter Initialized with Routes: ' +
+          Object.keys(this.routes).join(', '),
         'color: blue; font-size: 14px;',
       );
       console.log(
-        `%cCurrent Path: ${window.location.pathname}`,
+        '%cCurrent Path: ' + window.location.pathname,
         'color: orange; font-size: 14px;',
       );
     }
