@@ -1,52 +1,61 @@
 function Router(container, routes, options) {
-  if (options.header) {
-    const header = document.createElement('div');
-    header.innerHTML = options.header;
-    this.header = header;
-  }
-  this.router = document.createElement('div');
-  if (options.footer) {
-    const footer = document.createElement('div');
-    footer.innerHTML = options.footer;
-    this.footer = footer;
-  }
-  this.routes = routes;
-  this.errorHTML = options.errorHTML
-    ? options.errorHTML
-    : '<div>Not Found</div>';
 
-  this.goTo = function(route) {
+  function _appendResource(element, anchor) {
+    this[element] = element;
+    if (typeof element === 'string') {
+      const createdElement = document.createElement('div');
+      createdElement.innerHTML = element;
+      anchor.appendChild(createdElement);
+    } else {
+      anchor.appendChild(element);
+    }
+  }
+
+  function goTo(route) {
     window.history.pushState({}, route, `${window.location.origin}${route}`);
-    this.router.innerHTML = routes[window.location.pathname];
+    this.routerContent.innerHTML = routes[window.location.pathname];
     if (this.routes[window.location.pathname]) {
-      this.router.innerHTML = this.routes[window.location.pathname];
+      this.routerContent.innerHTML = this.routes[window.location.pathname];
       if (options.debug) {
         console.log(
           `%cNavigated to: ${route}`,
           'color: green; font-size: 14px;',
         );
       }
-      this.router.querySelectorAll('.router-link').forEach(link => {
-        link.onclick = this.goTo.bind(this, link.pathname);
-        link.href = 'javascript:void(null);';
-      });
+      _replaceLinks.call(this, this.routerContent);
     } else {
-      this.router.innerHTML = this.errorHTML;
+      this.routerContent.innerHTML = this.errorHTML;
       if (options.debug) {
         console.error(`Route not found: ${route}`);
       }
     }
   };
 
+  this.goTo = goTo.bind(this);
+
+  function _replaceLinks(containerForReplacement) {
+    containerForReplacement.querySelectorAll('.router-link').forEach(link => {
+      link.onclick = this.goTo.bind(this, link.pathname);
+      link.href = 'javascript:void(null);';
+    });
+  }
+
+  this.routerContent = document.createElement('div');
+
+  this.routes = routes;
+  this.errorHTML = options.errorHTML
+    ? options.errorHTML
+    : '<div>Not Found</div>';
+
   window.onload = () => {
     window.router = this;
-    this.container = document.getElementById(container)
-    if (this.header) {
-      this.container.appendChild(this.header);
+    this.container = document.getElementById(container);
+    if (options.header) {
+      _appendResource.call(this, options.header, this.container);
     }
-    this.container.appendChild(this.router);
-    if (this.footer) {
-      this.container.appendChild(this.footer);
+    this.container.appendChild(this.routerContent);
+    if (options.footer) {
+      _appendResource.call(this, options.footer, this.container);
     }
     this.goTo(window.location.pathname);
     if (options.debug) {
@@ -61,10 +70,7 @@ function Router(container, routes, options) {
         'color: orange; font-size: 14px;',
       );
     }
-    document.querySelectorAll('.router-link').forEach(link => {
-      link.onclick = this.goTo.bind(this, link.pathname);
-      link.href = 'javascript:void(null);';
-    });
+    _replaceLinks.call(this, document);
   };
 }
 
