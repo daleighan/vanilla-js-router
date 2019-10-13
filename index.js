@@ -1,5 +1,4 @@
 function Router(container, routes, options) {
-
   function _appendComponent(elementName, element, anchor, opts) {
     if (opts && opts.clearAnchor) {
       anchor.innerHTML = '';
@@ -31,7 +30,7 @@ function Router(container, routes, options) {
           'color: green; font-size: 14px;',
         );
       }
-      _replaceLinks.call(this, _routerContainer);
+      _replaceLinks.call(this, this, _routerContainer);
     } else {
       _appendComponent.call(
         this,
@@ -48,11 +47,13 @@ function Router(container, routes, options) {
 
   this.goTo = _goTo.bind(this);
 
-  function _replaceLinks(containerForReplacement) {
-    containerForReplacement.querySelectorAll('.router-link').forEach(link => {
-      link.onclick = this.goTo.bind(this, link.pathname);
-      link.href = 'javascript:void(null);';
-    });
+  function _replaceLinks(ctx, containerForReplacement) {
+    containerForReplacement
+      .querySelectorAll('.router-link')
+      .forEach(function(link) {
+        link.onclick = _goTo.bind(ctx, link.pathname);
+        link.href = 'javascript:void(null);';
+      });
   }
 
   function _removeTrailingSlash(pathname) {
@@ -68,7 +69,7 @@ function Router(container, routes, options) {
     ? options.errorHTML
     : '<div>Not Found</div>';
 
-  window.onload = () => {
+  window.onload = function() {
     window.router = this;
     this.container = document.getElementById(container);
     if (options.header) {
@@ -91,8 +92,8 @@ function Router(container, routes, options) {
         'color: orange; font-size: 14px;',
       );
     }
-    _replaceLinks.call(this, document);
-  };
+    _replaceLinks.call(this, this, document);
+  }.call(this);
 }
 
 module.exports = Router;
