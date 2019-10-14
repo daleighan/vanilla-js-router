@@ -63,30 +63,32 @@ function Router(container, routes, options) {
     ? options.errorHTML
     : '<div>Not Found</div>'
 
-  window.onload = function() {
-    window.router = this
-    this.container = document.getElementById(container)
-    if (options.header) {
-      _appendComponent.call(this, 'header', options.header, this.container)
-    }
-    this.container.appendChild(_routerContainer)
-    if (options.footer) {
-      _appendComponent.call(this, 'footer', options.footer, this.container)
-    }
-    this.goTo(window.location.pathname)
-    if (options.debug) {
-      console.log(
-        '%cRouter Initialized with Routes: ' +
-          Object.keys(this.routes).join(', '),
-        'color: blue; font-size: 14px;'
-      )
-      console.log(
-        '%cCurrent Path: ' + window.location.pathname,
-        'color: orange; font-size: 14px;'
-      )
-    }
-    _replaceLinks.call(this, this, document)
-  }.bind(this)
+  window.router = this
+  this.container = document.getElementById(container)
+
+  if (options.header) {
+    _appendComponent.call(this, 'header', options.header, this.container)
+  }
+
+  this.container.appendChild(_routerContainer)
+  if (options.footer) {
+    _appendComponent.call(this, 'footer', options.footer, this.container)
+  }
+
+  this.goTo(window.location.pathname)
+  _replaceLinks.call(this, this, document)
+
+  if (options.debug) {
+    console.log(
+      '%cRouter Initialized with Routes: ' +
+        Object.keys(this.routes).join(', '),
+      'color: blue; font-size: 14px;'
+    )
+    console.log(
+      '%cCurrent Path: ' + window.location.pathname,
+      'color: orange; font-size: 14px;'
+    )
+  }
 }
 
 module.exports = Router
