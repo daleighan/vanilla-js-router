@@ -1,4 +1,7 @@
 function Router(container, routes, options) {
+  if (!options) {
+    options = {}
+  }
   function _appendComponent(elementName, element, anchor, opts) {
     if (opts && opts.clearAnchor) {
       anchor.innerHTML = ''
@@ -91,4 +94,8 @@ function Router(container, routes, options) {
   }
 }
 
-module.exports = Router
+try {
+  module.exports = Router
+} catch (e) {
+  // Do not need to do anything when this script is not being required
+}
