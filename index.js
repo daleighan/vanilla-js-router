@@ -3,7 +3,6 @@ function Router(container, routes, options) {
     options = {}
   }
   function _appendComponent(elementName, element, anchor, opts) {
-    console.log('elName', elementName)
     if (opts && opts.clearAnchor) {
       anchor.innerHTML = ''
     }
@@ -14,11 +13,12 @@ function Router(container, routes, options) {
       anchor.appendChild(createdElement)
     } else if (typeof element === 'function') {
       var generated = element()
-      _appendComponent.call(this, elementName, generated, anchor, opts)
+      _appendComponent(elementName, generated, anchor, opts)
     } else {
       anchor.appendChild(element)
     }
   }
+  _appendComponent = _appendComponent.bind(this)
 
   function _goTo(route, fromOnPushState) {
     // The history should only be modified if the call of this function is not from the onPushState
@@ -27,13 +27,9 @@ function Router(container, routes, options) {
       window.history.pushState({}, route, window.location.origin + route)
     }
     if (this.routes[route]) {
-      _appendComponent.call(
-        this,
-        'currentView',
-        routes[route],
-        _routerContainer,
-        { clearAnchor: true }
-      )
+      _appendComponent('currentView', routes[route], _routerContainer, {
+        clearAnchor: true,
+      })
       if (options.debug) {
         console.log(
           '%cNavigated to: ' + route,
@@ -42,13 +38,9 @@ function Router(container, routes, options) {
       }
       _replaceLinks.call(this, this, _routerContainer)
     } else {
-      _appendComponent.call(
-        this,
-        'currentView',
-        this.errorHTML,
-        _routerContainer,
-        { clearAnchor: true }
-      )
+      _appendComponent('currentView', this.errorHTML, _routerContainer, {
+        clearAnchor: true,
+      })
       if (options.debug) {
         console.error('Route not found: ' + route)
       }
@@ -77,12 +69,12 @@ function Router(container, routes, options) {
   this.container = document.getElementById(container)
 
   if (options.header) {
-    _appendComponent.call(this, 'header', options.header, this.container)
+    _appendComponent('header', options.header, this.container)
   }
 
   this.container.appendChild(_routerContainer)
   if (options.footer) {
-    _appendComponent.call(this, 'footer', options.footer, this.container)
+    _appendComponent('footer', options.footer, this.container)
   }
 
   this.goTo(window.location.pathname)
