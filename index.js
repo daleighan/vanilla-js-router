@@ -36,7 +36,7 @@ function Router(container, routes, options) {
           'color: green; font-size: 14px;'
         )
       }
-      _replaceLinks.call(this, this, _routerContainer)
+      _replaceLinks.call(this, _routerContainer)
     } else {
       _appendComponent('currentView', this.errorHTML, _routerContainer, {
         clearAnchor: true,
@@ -49,13 +49,11 @@ function Router(container, routes, options) {
 
   this.goTo = _goTo.bind(this)
 
-  function _replaceLinks(ctx, containerForReplacement) {
-    containerForReplacement
-      .querySelectorAll('.router-link')
-      .forEach(function(link) {
-        link.onclick = _goTo.bind(ctx, link.pathname)
-        link.href = 'javascript:void(null);'
-      })
+  function _replaceLinks(containerForReplacement) {
+    containerForReplacement.querySelectorAll('.router-link').forEach(link => {
+      link.onclick = _goTo.bind(this, link.pathname)
+      link.href = 'javascript:void(null);'
+    })
   }
 
   var _routerContainer = document.createElement('div')
@@ -78,7 +76,7 @@ function Router(container, routes, options) {
   }
 
   this.goTo(window.location.pathname)
-  _replaceLinks.call(this, this, document)
+  _replaceLinks.call(this, document)
 
   if (options.debug) {
     console.log(
