@@ -48,27 +48,63 @@ function Router(container, routes, options = {}) {
       )
     }
     if (this.routes[route]) {
-      _appendComponent('currentView', routes[route], _routerContainer, {
-        clearAnchor: true,
-      })
-      if (options.debug) {
-        console.log(
-          '%cNavigated to: ' + route,
-          'color: green; font-size: 14px;'
-        )
-      }
-      _replaceLinks(_routerContainer)
+      _loadSuccess(route)
     } else {
-      _appendComponent('currentView', this.errorHTML, _routerContainer, {
-        clearAnchor: true,
-      })
-      if (options.debug) {
-        console.error('Route not found: ' + route)
+      // match url with params here
+      const sameLength = []
+      const splitCurrent = route.split('/')
+      for (const key in this.routes) {
+        const storedRoute = key.split('/')
+        if (storedRoute.length === splitCurrent.length) {
+          sameLength.push(storedRoute)
+        }
       }
+
+      for (let key of sameLength) {
+        const params = {}
+        if (_isRelativeMatch(splitCurrent, key, params)) {
+          console.log('params', params)
+          return _loadSuccess(key.join('/'))
+        }
+      }
+      // if no route with params, run code below
+      _loadError(route)
     }
   }
   // This function isn't used much here, but allows navigation with window.router
   this.goTo = _goTo
+
+  const _loadSuccess = route => {
+    _appendComponent('currentView', this.routes[route], _routerContainer, {
+      clearAnchor: true,
+    })
+    if (options.debug) {
+      console.log('%cNavigated to: ' + route, 'color: green; font-size: 14px;')
+    }
+    _replaceLinks(_routerContainer)
+  }
+
+  // This function is only used for attaching the error page if an error occurs
+  const _loadError = route => {
+    _appendComponent('currentView', this.errorHTML, _routerContainer, {
+      clearAnchor: true,
+    })
+    if (options.debug) {
+      console.error('Route not found: ' + route)
+    }
+  }
+  // This is just a helper function that checks if a url and relative one match
+  function _isRelativeMatch(entered, key, params) {
+    for (let i = 0; i < entered.length; i++) {
+      if (key[i][0] !== ':' && entered[i] !== key[i]) {
+        return false
+      }
+      if (key[i][0] === ':') {
+        params[key[i].slice(1)] = entered[i]
+      }
+    }
+    return true
+  }
 
   // This function replaces all anchor elements that have a class of 'router-link'
   // with links that use client side routing instead of making requests to a server
