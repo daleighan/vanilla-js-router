@@ -3,10 +3,26 @@
 // string, html elements or functions returning one of those two types.
 // Options include a header, a footer, a debug option
 function Router(container, routes, options = {}) {
-  const _appendComponent = (elementName, element, anchor, opts) => {
-    if (opts && opts.clearAnchor) {
+  this.routes = routes
+  this.errorHTML = options.errorHTML
+    ? options.errorHTML
+    : '<div>Not Found</div>'
+  // The container holds the router as well as the header and footer if
+  // they are also present
+  this.container = document.getElementById(container)
+  // The router is attached to the window so that it can be accessed easily
+  window.router = this
+
+  // This function will handle all of the necessary kinds of types used
+  // by different routes and will append them to an anchor element. The
+  // value of element can be a string, an html element or a function
+  const _appendComponent = (elementName, element, anchor, opts = {}) => {
+    if (opts.clearAnchor) {
+      // The clearAnchor option is used if the entire contents of innerHtml
+      // need to be replaced
       anchor.innerHTML = ''
     }
+    // A reference to the appended element is stored in this object
     this[elementName] = element
     if (typeof element === 'string') {
       const createdElement = document.createElement('div')
@@ -20,6 +36,7 @@ function Router(container, routes, options = {}) {
     }
   }
 
+  // This is the function that handles the actual client side routing
   const _goTo = (route, fromOnPushState, search = window.location.search) => {
     // The history should only be modified if the call of this function
     // is not from the onPushState event handler
@@ -50,40 +67,35 @@ function Router(container, routes, options = {}) {
       }
     }
   }
-  // This isn't used much here, but allows navigation when using the window.router object
+  // This function isn't used much here, but allows navigation with window.router
   this.goTo = _goTo
 
+  // This function replaces all anchor elements that have a class of 'router-link'
+  // with links that use client side routing instead of making requests to a server
   const _replaceLinks = containerForReplacement => {
     containerForReplacement.querySelectorAll('.router-link').forEach(link => {
       const linkPath = link.pathname
-      console.log(link.pathname, link.search)
       const search = link.search
       link.onclick = () => _goTo(linkPath, false, search)
       link.href = 'javascript:void(null);'
     })
   }
 
-  const _routerContainer = document.createElement('div')
-
-  this.routes = routes
-  this.errorHTML = options.errorHTML
-    ? options.errorHTML
-    : '<div>Not Found</div>'
-
-  window.router = this
-  this.container = document.getElementById(container)
-
+  // Below, all of the provided components are appended to the container if they are needed
   if (options.header) {
     _appendComponent('header', options.header, this.container)
   }
 
+  const _routerContainer = document.createElement('div')
   this.container.appendChild(_routerContainer)
 
   if (options.footer) {
     _appendComponent('footer', options.footer, this.container)
   }
 
-  this.goTo(window.location.pathname)
+  // When the page first loads, these to functions are called to make the router load
+  // the correct page
+  this.goTo(window.location.pathname, true)
   _replaceLinks(document)
 
   if (options.debug) {
@@ -97,6 +109,8 @@ function Router(container, routes, options = {}) {
       'color: orange; font-size: 14px;'
     )
   }
+  // This is added so that the router navigates correctly when the user uses
+  // built-in browser functions
   window.onpopstate = () => window.router.goTo(window.location.pathname, true)
 }
 
