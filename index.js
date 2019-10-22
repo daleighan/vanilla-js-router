@@ -13,9 +13,9 @@ function Router(container, routes, options = {}) {
   // The router is attached to the window so that it can be accessed easily
   window.router = this;
 
-  // This function will handle all of the necessary kinds of types used
+  // This function will handle all of the necessary types used
   // by different routes and will append them to an anchor element. The
-  // value of element can be a string, an html element or a function
+  // value of input elements can be a string, an html element or a function
   const _appendComponent = (elementName, element, anchor, opts = {}) => {
     if (opts.clearAnchor) {
       // The clearAnchor option is used if the entire contents of innerHtml
@@ -37,10 +37,21 @@ function Router(container, routes, options = {}) {
     }
   };
 
+  // This function replaces all anchor elements that have a class of 'router-link'
+  // with links that use client side routing instead of making requests to a server
+  const _replaceLinks = containerForReplacement => {
+    containerForReplacement.querySelectorAll('.router-link').forEach(link => {
+      const linkPath = link.pathname;
+      const search = link.search;
+      link.onclick = () => _goTo(linkPath, false, search);
+      link.href = 'javascript:void(null);';
+    });
+  };
+
   // This is the function that handles the actual client side routing
   const _goTo = (route, fromOnPushState, search = window.location.search) => {
     // The history should only be modified if the call of this function
-    // is not from the onPushState event handler
+    // is not from the onPushState event handler and not on initial loading
     if (!(fromOnPushState && typeof fromOnPushState === 'boolean')) {
       window.history.pushState(
         {},
@@ -49,7 +60,8 @@ function Router(container, routes, options = {}) {
       );
     }
     if (this.routes[route]) {
-      _loadSuccess(route);
+      // If the exact path is found in this.routes, it is loaded
+      _loadRoute(route);
     } else {
       // Below, the current route is matched with any route in this.routes that contain
       // params that are a match. The initial approach for how this was done is naive,
@@ -66,13 +78,13 @@ function Router(container, routes, options = {}) {
       // All the keys that are the same length are checked for relative matches with
       // a helper function. The helper function also puts the values of any params into
       // the params object. If there are multiple matches in sameLength, it will always
-      // go with the first one.
+      // go with the first match found
       for (let key of sameLength) {
         const params = {};
         if (_isRelativeMatch(splitCurrent, key, params)) {
           // Params are passed below so that they can be used by functions that return
           // elements with content based on them
-          return _loadSuccess(key.join('/'), params);
+          return _loadRoute(key.join('/'), params);
         }
       }
       // Only then will the error page be loaded if there are no matches
@@ -86,8 +98,8 @@ function Router(container, routes, options = {}) {
   };
   // This function isn't used much here, but allows navigation with window.router
   this.goTo = _goTo;
-
-  const _loadSuccess = (route, params) => {
+  // This is a reusable function for attaching the correct element to the router
+  const _loadRoute = (route, params) => {
     _appendComponent('currentView', this.routes[route], _routerContainer, {
       clearAnchor: true,
       params,
@@ -113,31 +125,18 @@ function Router(container, routes, options = {}) {
     return true;
   }
 
-  // This function replaces all anchor elements that have a class of 'router-link'
-  // with links that use client side routing instead of making requests to a server
-  const _replaceLinks = containerForReplacement => {
-    containerForReplacement.querySelectorAll('.router-link').forEach(link => {
-      const linkPath = link.pathname;
-      const search = link.search;
-      link.onclick = () => _goTo(linkPath, false, search);
-      link.href = 'javascript:void(null);';
-    });
-  };
-
-  // Below, all of the provided components are appended to the container if they are needed
+  // Below, all of the provided components are appended to the container if they are included
   if (options.header) {
     _appendComponent('header', options.header, this.container);
   }
-
   const _routerContainer = document.createElement('div');
   this.container.appendChild(_routerContainer);
-
   if (options.footer) {
     _appendComponent('footer', options.footer, this.container);
   }
 
-  // When the page first loads, these to functions are called to make the router load
-  // the correct page
+  // When the page first loads, these two functions are called to make the router load
+  // the correct view and to replace necessary routes with ones that use this router
   this.goTo(window.location.pathname, true);
   _replaceLinks(document);
 
@@ -153,8 +152,8 @@ function Router(container, routes, options = {}) {
     );
   }
   // This is added so that the router navigates correctly when the user uses
-  // built-in browser functions
-  window.onpopstate = () => window.router.goTo(window.location.pathname, true);
+  // built-in browser navigation
+  window.onpopstate = () => _goTo(window.location.pathname, true);
 }
 
 export default Router;
