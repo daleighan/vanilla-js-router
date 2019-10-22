@@ -89,7 +89,10 @@ function Router(container, routes, options = {}) {
         clearAnchor: true,
       });
       if (options.debug) {
-        console.error('Route not found: ' + route);
+        console.log(
+          `%cRoute not found: ${route}`,
+          'color: red; font-size: 14px;',
+        );
       }
     }
   };
@@ -102,7 +105,7 @@ function Router(container, routes, options = {}) {
       params,
     });
     if (options.debug) {
-      console.log('%cNavigated to: ' + route, 'color: green; font-size: 14px;');
+      console.log(`%cNavigated to: ${route}`, 'color: green; font-size: 14px;');
     }
     _replaceLinks(_routerContainer);
   };
@@ -136,12 +139,13 @@ function Router(container, routes, options = {}) {
 
   if (options.debug) {
     console.log(
-      '%cRouter Initialized with Routes: ' +
-        Object.keys(this.routes).join(', '),
+      `%cRouter Initialized with Routes: ${Object.keys(this.routes).join(
+        ', ',
+      )}`,
       'color: blue; font-size: 14px;',
     );
     console.log(
-      '%cCurrent Path: ' + window.location.pathname,
+      `%cCurrent Path: ${window.location.pathname}`,
       'color: orange; font-size: 14px;',
     );
   }
