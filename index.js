@@ -29,7 +29,8 @@ function Router(container, routes, options = {}) {
       createdElement.innerHTML = element
       anchor.appendChild(createdElement)
     } else if (typeof element === 'function') {
-      const generated = element()
+      // Params may be passed to new elements that are created by functions
+      const generated = element(opts.params)
       _appendComponent(elementName, generated, anchor, opts)
     } else {
       anchor.appendChild(element)
@@ -50,33 +51,41 @@ function Router(container, routes, options = {}) {
     if (this.routes[route]) {
       _loadSuccess(route)
     } else {
-      // match url with params here
+      // Below, the current route is matched with any route in this.routes that contain
+      // params that are a match. The initial approach for how this was done is naive,
+      // and definitely can and should be improved in the future
       const sameLength = []
       const splitCurrent = route.split('/')
+      // this.routes is searched for keys with the same number of sections
       for (const key in this.routes) {
         const storedRoute = key.split('/')
         if (storedRoute.length === splitCurrent.length) {
           sameLength.push(storedRoute)
         }
       }
-
+      // All the keys that are the same length are checked for relative matches with
+      // a helper function. The helper function also puts the values of any params into
+      // the params object. If there are multiple matches in sameLength, it will always
+      // go with the first one.
       for (let key of sameLength) {
         const params = {}
         if (_isRelativeMatch(splitCurrent, key, params)) {
-          console.log('params', params)
-          return _loadSuccess(key.join('/'))
+          // Params are passed below so that they can be used by functions that return
+          // elements with content based on them
+          return _loadSuccess(key.join('/'), params)
         }
       }
-      // if no route with params, run code below
+      // Only then will the error page be loaded if there are no matches
       _loadError(route)
     }
   }
   // This function isn't used much here, but allows navigation with window.router
   this.goTo = _goTo
 
-  const _loadSuccess = route => {
+  const _loadSuccess = (route, params) => {
     _appendComponent('currentView', this.routes[route], _routerContainer, {
       clearAnchor: true,
+      params,
     })
     if (options.debug) {
       console.log('%cNavigated to: ' + route, 'color: green; font-size: 14px;')
@@ -93,7 +102,9 @@ function Router(container, routes, options = {}) {
       console.error('Route not found: ' + route)
     }
   }
-  // This is just a helper function that checks if a url and relative one match
+  // This is just a helper function that checks if a url and relative one match.
+  // A reference to the object used for params must be used as this object
+  // is not returned at the end of the function
   function _isRelativeMatch(entered, key, params) {
     for (let i = 0; i < entered.length; i++) {
       if (key[i][0] !== ':' && entered[i] !== key[i]) {
