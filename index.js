@@ -12,7 +12,6 @@ function Router(container, routes, options = {}) {
   this.container = document.getElementById(container);
   // The router is attached to the window so that it can be accessed easily
   window.router = this;
-
   // This function will handle all of the necessary types used
   // by different routes and will append them to an anchor element. The
   // value of input elements can be a string, an html element or a function
@@ -36,7 +35,6 @@ function Router(container, routes, options = {}) {
       anchor.appendChild(element);
     }
   };
-
   // This function replaces all anchor elements that have a class of 'router-link'
   // with links that use client side routing instead of making requests to a server
   const _replaceLinks = containerForReplacement => {
@@ -47,7 +45,6 @@ function Router(container, routes, options = {}) {
       link.href = 'javascript:void(null);';
     });
   };
-
   // This is the function that handles the actual client side routing
   const _goTo = (route, fromOnPushState, search = window.location.search) => {
     // The history should only be modified if the call of this function
@@ -109,7 +106,6 @@ function Router(container, routes, options = {}) {
     }
     _replaceLinks(_routerContainer);
   };
-
   // This is just a helper function that checks if a url and relative one match.
   // A reference to the object used for params must be used as this object
   // is not returned at the end of the function
@@ -124,7 +120,6 @@ function Router(container, routes, options = {}) {
     }
     return true;
   }
-
   // Below, all of the provided components are appended to the container if they are included
   if (options.header) {
     _appendComponent('header', options.header, this.container);
@@ -134,7 +129,6 @@ function Router(container, routes, options = {}) {
   if (options.footer) {
     _appendComponent('footer', options.footer, this.container);
   }
-
   // When the page first loads, these two functions are called to make the router load
   // the correct view and to replace necessary routes with ones that use this router
   this.goTo(window.location.pathname, true);
