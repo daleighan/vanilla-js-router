@@ -16,14 +16,15 @@ function Router(container, routes, options) {
     }
   }
 
-  function _goTo(route) {
-    window.history.pushState({}, route, window.location.origin + route)
-    var pathname = window.location.pathname
-    if (this.routes[pathname]) {
+  function _goTo(route, fromOnPushState) {
+    if (!(fromOnPushState && typeof fromOnPushState === 'boolean')) {
+      window.history.pushState({}, route, window.location.origin + route)
+    }
+    if (this.routes[route]) {
       _appendComponent.call(
         this,
         'currentView',
-        routes[pathname],
+        routes[route],
         _routerContainer,
         { clearAnchor: true }
       )
@@ -91,6 +92,9 @@ function Router(container, routes, options) {
       '%cCurrent Path: ' + window.location.pathname,
       'color: orange; font-size: 14px;'
     )
+  }
+  window.onpopstate = function() {
+    window.router.goTo(window.location.pathname, true)
   }
 }
 
