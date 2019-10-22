@@ -1,28 +1,24 @@
-function Router(container, routes, options) {
-  if (!options) {
-    options = {}
-  }
-  function _appendComponent(elementName, element, anchor, opts) {
+function Router(container, routes, options = {}) {
+  const _appendComponent = (elementName, element, anchor, opts) => {
     if (opts && opts.clearAnchor) {
       anchor.innerHTML = ''
     }
     this[elementName] = element
     if (typeof element === 'string') {
-      var createdElement = document.createElement('div')
+      const createdElement = document.createElement('div')
       createdElement.innerHTML = element
       anchor.appendChild(createdElement)
     } else if (typeof element === 'function') {
-      var generated = element()
+      const generated = element()
       _appendComponent(elementName, generated, anchor, opts)
     } else {
       anchor.appendChild(element)
     }
   }
-  _appendComponent = _appendComponent.bind(this)
 
-  function _goTo(route, fromOnPushState) {
-    // The history should only be modified if the call of this function is not from the onPushState
-    // event handler
+  const _goTo = (route, fromOnPushState) => {
+    // The history should only be modified if the call of this function
+    // is not from the onPushState event handler
     if (!(fromOnPushState && typeof fromOnPushState === 'boolean')) {
       window.history.pushState({}, route, window.location.origin + route)
     }
@@ -36,7 +32,7 @@ function Router(container, routes, options) {
           'color: green; font-size: 14px;'
         )
       }
-      _replaceLinks.call(this, _routerContainer)
+      _replaceLinks(_routerContainer)
     } else {
       _appendComponent('currentView', this.errorHTML, _routerContainer, {
         clearAnchor: true,
@@ -46,17 +42,18 @@ function Router(container, routes, options) {
       }
     }
   }
+  // This isn't used much here, but allows navigation when using the window.router object
+  this.goTo = _goTo
 
-  this.goTo = _goTo.bind(this)
-
-  function _replaceLinks(containerForReplacement) {
+  const _replaceLinks = containerForReplacement => {
     containerForReplacement.querySelectorAll('.router-link').forEach(link => {
-      link.onclick = _goTo.bind(this, link.pathname)
+      const linkPath = link.pathname
+      link.onclick = () => _goTo(linkPath)
       link.href = 'javascript:void(null);'
     })
   }
 
-  var _routerContainer = document.createElement('div')
+  const _routerContainer = document.createElement('div')
 
   this.routes = routes
   this.errorHTML = options.errorHTML
@@ -76,7 +73,7 @@ function Router(container, routes, options) {
   }
 
   this.goTo(window.location.pathname)
-  _replaceLinks.call(this, document)
+  _replaceLinks(document)
 
   if (options.debug) {
     console.log(
@@ -89,9 +86,7 @@ function Router(container, routes, options) {
       'color: orange; font-size: 14px;'
     )
   }
-  window.onpopstate = function() {
-    window.router.goTo(window.location.pathname, true)
-  }
+  window.onpopstate = () => window.router.goTo(window.location.pathname, true)
 }
 
 export default Router
