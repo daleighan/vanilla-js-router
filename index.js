@@ -1,3 +1,7 @@
+// The container is the id of a containing html element and
+// routes is an object containing the names of routes matched with
+// string, html elements or functions returning one of those two types.
+// Options include a header, a footer, a debug option
 function Router(container, routes, options = {}) {
   const _appendComponent = (elementName, element, anchor, opts) => {
     if (opts && opts.clearAnchor) {
@@ -16,11 +20,15 @@ function Router(container, routes, options = {}) {
     }
   }
 
-  const _goTo = (route, fromOnPushState) => {
+  const _goTo = (route, fromOnPushState, search = window.location.search) => {
     // The history should only be modified if the call of this function
     // is not from the onPushState event handler
     if (!(fromOnPushState && typeof fromOnPushState === 'boolean')) {
-      window.history.pushState({}, route, window.location.origin + route)
+      window.history.pushState(
+        {},
+        route,
+        window.location.origin + route + search
+      )
     }
     if (this.routes[route]) {
       _appendComponent('currentView', routes[route], _routerContainer, {
@@ -48,7 +56,9 @@ function Router(container, routes, options = {}) {
   const _replaceLinks = containerForReplacement => {
     containerForReplacement.querySelectorAll('.router-link').forEach(link => {
       const linkPath = link.pathname
-      link.onclick = () => _goTo(linkPath)
+      console.log(link.pathname, link.search)
+      const search = link.search
+      link.onclick = () => _goTo(linkPath, false, search)
       link.href = 'javascript:void(null);'
     })
   }
@@ -68,6 +78,7 @@ function Router(container, routes, options = {}) {
   }
 
   this.container.appendChild(_routerContainer)
+
   if (options.footer) {
     _appendComponent('footer', options.footer, this.container)
   }
