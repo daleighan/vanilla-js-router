@@ -3,6 +3,7 @@ function Router(container, routes, options) {
     options = {}
   }
   function _appendComponent(elementName, element, anchor, opts) {
+    console.log('elName', elementName)
     if (opts && opts.clearAnchor) {
       anchor.innerHTML = ''
     }
@@ -11,12 +12,17 @@ function Router(container, routes, options) {
       var createdElement = document.createElement('div')
       createdElement.innerHTML = element
       anchor.appendChild(createdElement)
+    } else if (typeof element === 'function') {
+      var generated = element()
+      _appendComponent.call(this, elementName, generated, anchor, opts)
     } else {
       anchor.appendChild(element)
     }
   }
 
   function _goTo(route, fromOnPushState) {
+    // The history should only be modified if the call of this function is not from the onPushState
+    // event handler
     if (!(fromOnPushState && typeof fromOnPushState === 'boolean')) {
       window.history.pushState({}, route, window.location.origin + route)
     }
@@ -98,8 +104,4 @@ function Router(container, routes, options) {
   }
 }
 
-try {
-  module.exports = Router
-} catch (e) {
-  // Do not need to do anything when this script is not being required
-}
+export default Router
