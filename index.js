@@ -29,7 +29,7 @@ function Router(container, routes, options = {}) {
       anchor.appendChild(createdElement);
     } else if (typeof element === 'function') {
       // Params may be passed to new elements that are created by functions
-      const generated = element(opts.params);
+      const generated = element({ params: opts.params });
       _appendComponent(elementName, generated, anchor, opts);
     } else {
       anchor.appendChild(element);
