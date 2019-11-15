@@ -19,9 +19,9 @@ import VanillaJSRouter from 'vanilla-js-router';
 const router = new VanillaJSRouter(anchorId, routes, options);
 ```
 
--- anchorId is a string that is the id of the component that the router will attach to.
+- anchorId is a string that is the id of the component that the router will attach to.
 
--- routes is an object in the following format:
+- routes is an object in the following format:
 
 ```js
 const routes = {
@@ -34,7 +34,7 @@ const routes = {
 - The url is a string that is the relative path of the url for a particular component and the route.
 - The component for a route can either be a string of HTML, a function that returns a string of html or a function that returns a DOM node.
 
--- options is also an object that looks like this:
+options is also an object that looks like this:
 
 ```js
 const options = {
@@ -55,13 +55,13 @@ const options = {
 
 As previously mentioned, there are three different ways that components can be provided. They are as follows:
 
--- As a string:
+As a string:
 
 ```js
 const Component = '<div>My Component</div>';
 ```
 
--- As a function that returns a string or template literal:
+As a function that returns a string or template literal:
 
 ```js
 function Component() {
@@ -69,7 +69,7 @@ function Component() {
 }
 ```
 
--- As a function that returns a DOM element:
+As a function that returns a DOM element:
 
 ```js
 function Component() {
@@ -108,13 +108,13 @@ function Component3({ params }) {
 
 There are two ways to navigate with the router.
 
--- using JavaScript. This can be done with:
+Using JavaScript. This can be done with:
 
 ```js
 window.router.goTo(route);
 ```
 
--- adding an HTML anchor element with a class of 'router-link':
+Adding an HTML anchor element with a class of 'router-link':
 
 ```html
 <a class="router-link" href="/component">My Link</a>
