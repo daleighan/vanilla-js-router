@@ -1,6 +1,6 @@
 {
   "name": "@daleighan/vanilla-js-router",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "A Vanilla JS library for client side routing",
   "main": "index.js",
   "scripts": {
