@@ -2,16 +2,16 @@
 
 ### What is this project?
 
-It is a library for client-side routing that is independent of any other frameworks or libraries. It was created to be used for a single page application is designed to be flexible and lightweight. It provides the functionality of something like react-router without the bloat of using something like React. It uses template literals or dom elements as components for each different view. Along with this repository there is also an example application [here](https://github.com/daleighan/vanilla-js-router-example-app) that may be useful in deciphering how to use this .
+It is a library for client-side routing that is independent of any other frameworks or libraries. It was created to be used for a single page application and is designed to be flexible and lightweight. It provides the functionality of libraries like react-router for apps using vanilla JavaScript. It uses template literals or dom elements as components for each different view. Along with this repository there is also an example application [here](https://github.com/daleighan/vanilla-js-router-example-app) that may be useful in learning to use this .
 
 ### Installation
 
-Install with npm using
+Install with npm:
 `npm install @daleighan/vanilla-js-router`
 
 ## Usage
 
-#### To create a router:
+### Creating a router:
 
 ```js
 import VanillaJSRouter from 'vanilla-js-router';
@@ -47,13 +47,13 @@ const options = {
 
 - The debug option allows addition information about route changes to be logged in the console.
 
-- errorHTML accepts the same types of components mentioned above and is displayed if the requested url is not found.
+- errorHTML accepts the same types of components mentioned above and is displayed if the requested url is not found in the routes object.
 - header accepts the same types of components and is placed above the content within the router
 - footer accepts the same types of components and is placed below the content within the router
 
-#### Creating components:
+### Creating components:
 
-As previously mentioned, there are three different ways that components can be provided. They are as follows.
+As previously mentioned, there are three different ways that components can be provided. They are as follows:
 
 -- As a string:
 
@@ -65,7 +65,7 @@ const Component = '<div>My Component</div>';
 
 ```js
 function Component() {
-  '<div>My Component</div>';
+  return '<div>My Component</div>';
 }
 ```
 
@@ -75,12 +75,13 @@ function Component() {
 function Component() {
   const div = document.createElement('div');
   div.textContent = 'My Component';
+  return div;
 }
 ```
 
-#### Path matching:
+### Path matching:
 
-Currently, path matching is not that sophisticated, but it does allow for exact path matching and matching with params. An example of this:
+Currently, path matching is not very sophisticated, but it does allow for exact path matching and path matching with params. An of a routes object with these two kinds of paths:
 
 ```js
 const routes = {
@@ -91,19 +92,19 @@ const routes = {
 };
 ```
 
-The first route would have to be an exact match but the second one could be given any id and the third would has two params. If there is an exact match found for the route, that is prioritized over any route that includes params.
+The first route would have to be an exact match but the second one could be given any id and the third would has two params. If there is an exact match found for the route, it is prioritized over any route that includes params.
 
-For a route with params, these params can be passed to the component if that component is a function. The way to do that for a route that is given two params is as follows:
+For a route with params, these params can be passed to the component if it is a function. The way to do that for a route that is given two params is as follows:
 
 ```js
 function Component3({ params }) {
   const div = document.createElement('div');
   div.textContent = `id: ${params.id}, action: ${params.action}`;
-  return project;
+  return div;
 }
 ```
 
-#### Navigating using the router:
+### Navigation:
 
 There are two ways to navigate with the router.
 
@@ -119,4 +120,8 @@ window.router.goTo(route);
 <a class="router-link" href="/component">My Link</a>
 ```
 
-Any HTML elements with that class name will be made to use the router when clicked when a component is loaded.
+Any HTML elements with that class name at the time a route is loaded will navigate using the router.
+
+## Credits:
+
+Developed primarily by [daleighan](https://github.com/daleighan) but always open to additional contributors.
